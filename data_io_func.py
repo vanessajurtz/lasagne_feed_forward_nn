@@ -19,6 +19,7 @@ import theano.tensor as T
 
 import lasagne
 
+theano.config.floatX='float32'
 
 
 def read_pep(filename, MAX_PEP_SEQ_LEN):
@@ -106,7 +107,7 @@ def encode_pep(Xin, max_pep_seq_len):
     # make variable to store output:
     Xout = np.zeros((n_seqs, max_pep_seq_len, n_features),
                        dtype=theano.config.floatX)
-    
+
     for i in range(0,len(Xin)):
         for j in range(0,len(Xin[i])):
             Xout[i, j, :n_features] = blosum[ Xin[i][j] ]
