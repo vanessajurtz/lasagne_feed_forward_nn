@@ -113,31 +113,26 @@ def encode_pep(Xin, max_pep_seq_len):
             Xout[i, j, :n_features] = blosum[ Xin[i][j] ]
     return Xout
 
-# modified from nntools:--------------------------------------------------------
-def conv_seqs(X, length):
+
+def encode_pep_T(Xin, max_pep_seq_len):
     '''
-    Convert a list of matrices into np.ndarray
+    encode AA seq of peptides using BLOSUM50
 
     parameters:
-        - X : list of np.ndarray
-            List of matrices
-        - length : int
-            Desired sequence length.  Smaller sequences will be padded with 0s,
-            longer will be truncated.
-        - batch_size : int
-            Mini-batch size
-
+        - Xin : list of peptide sequences in AA
     returns:
-        - X_batch : np.ndarray
-            Tensor of time series matrix batches,
-            shape=(n_batches, batch_size, length, n_features)
+        - Xout : encoded peptide seuqneces (batch_size, n_features, max_pep_seq_len)
     '''
+    # read encoding matrix:
+    blosum = read_blosum_MN('data/BLOSUM50')
+    n_features=len(blosum['A'])
+    n_seqs=len(Xin)
 
-    n_seqs = len(X)
-    n_features = X[0].shape[1]
-
-    X_pad = np.zeros((n_seqs, length, n_features),
+    # make variable to store output:
+    Xout = np.zeros((n_seqs, n_features, max_pep_seq_len),
                        dtype=theano.config.floatX)
-    for i in range(0,len(X)):
-        X_pad[i, :X[i].shape[0], :n_features] = X[i]
-    return X_pad
+
+    for i in range(0,len(Xin)):
+        for j in range(0,len(Xin[i])):
+            Xout[i, :n_features, j] = blosum[ Xin[i][j] ]
+    return Xout
